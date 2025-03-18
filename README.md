@@ -1,6 +1,6 @@
 # RebrandingWeb_Kel.TlogosariWetan-Admin
 
-Selamat datang di proyek **RebrandingWeb_Kel.TlogosariWetan-Admin**! Proyek ini bertujuan untuk memberikan tampilan baru dan fungsionalitas yang lebih baik untuk website Kelurahan Tlogosari Wetan. Dibangun dengan **React** dan **Vite**, proyek ini menawarkan pengembangan website yang cepat, modern, dan efisien.
+Selamat datang di proyek **RebrandingWeb_Kel.TlogosariWetan-Admin**! Proyek ini bertujuan untuk memberikan tampilan baru dan fungsionalitas yang lebih baik untuk website Kelurahan Tlogosari Wetan dari segi Administrator. Dibangun dengan **React** dan **Vite**, proyek ini menawarkan pengembangan website yang cepat, modern, dan efisien.
 
 ## 🚀 Fitur Utama
 
