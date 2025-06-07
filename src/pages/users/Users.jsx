@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { getAllUsers } from "../../utils/data/authAPI";
 import HashLoader from "react-spinners/HashLoader";
-import userImg from "../../assets/user.png";
+// import userImg from "../../assets/user.png";
+import { getInitialsAndColor } from "../../utils/helper.js";
 
 const User = () => {
   const [user, setUser] = useState([]);
@@ -81,11 +82,23 @@ const User = () => {
 
                 <td className="py-2 px-4 border ">
                   <div className="flex items-center justify-center">
-                    <img
-                      src={user.avatar || userImg}
-                      alt="User"
-                      className="w-12 h-12 rounded-full object-cover border border-primary p-0.5"
-                    />
+                    {user.image ? (
+                      <img
+                        src={user.image}
+                        alt="User"
+                        className="w-10 h-10 rounded-full"
+                      />
+                    ) : (
+                      <div
+                        className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white"
+                        style={{
+                          backgroundColor: getInitialsAndColor(user.username)
+                            .color,
+                        }}
+                      >
+                        {getInitialsAndColor(user.username).initials}
+                      </div>
+                    )}
                   </div>
                 </td>
                 <td className="py-2 px-4 border text-center">
