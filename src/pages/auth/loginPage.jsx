@@ -1,23 +1,21 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { loginUser } from "../../utils/data/authAPI"; // Pastikan path ini sesuai
 import { HashLoader } from "react-spinners";
 import toast from "react-hot-toast";
+import AuthContext from "../../utils/context/AuthContext"; // Import AuthContext
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  // const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const { refreshAuth } = useContext(AuthContext); // Use AuthContext to get refreshAuth
   const navigate = useNavigate(); // Untuk redirect setelah login berhasil
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
-  // const handleRememberMe = () => setRememberMe(!rememberMe);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,9 +24,10 @@ const LoginPage = () => {
 
     try {
       const data = await loginUser(formData);
-      // Jika login berhasil, lakukan redirect ke halaman utama atau dashboard setelah login
+      // Jika login berhasil, panggil refreshAuth untuk memperbarui status autentikasi
       if (data) {
         toast.success(data.message);
+        await refreshAuth(); // Update isAuthenticated state
         navigate("/"); // Redirect ke halaman utama atau dashboard setelah login
       }
     } catch (err) {
@@ -87,23 +86,6 @@ const LoginPage = () => {
               required
             />
           </div>
-          {/* <div className="flex items-center justify-between mb-6">
-            <label className="flex items-center text-sm text-gray-600">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={handleRememberMe}
-                className="mr-2"
-              />
-              Remember Me
-            </label>
-            <Link
-              to="/forgot-password"
-              className="text-sm text-blue-500 hover:underline"
-            >
-              Forgot Password?
-            </Link>
-          </div> */}
           <button
             type="submit"
             className="w-full bg-primary text-white py-2 px-4 rounded text-sm hover:bg-secondary transition-all ease-in-out duration-200"
