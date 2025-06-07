@@ -8,7 +8,7 @@ import {
   deleteSlider,
   updateSlider,
   createSlider,
-} from "../../utils/data/Slider";
+} from "../../utils/data/sliderAPI";
 
 const Slider = () => {
   const [sliders, setSliders] = useState([]);

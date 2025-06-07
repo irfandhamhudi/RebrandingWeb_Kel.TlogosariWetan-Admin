@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   getAllServiceComplain,
   deleteServiceComplain,
-} from "../../utils/data/serviceComplain";
+} from "../../utils/data/serviceComplainAPI";
 import HashLoader from "react-spinners/HashLoader";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
