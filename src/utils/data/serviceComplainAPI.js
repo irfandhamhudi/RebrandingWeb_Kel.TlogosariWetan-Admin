@@ -35,3 +35,24 @@ export const deleteServiceComplain = async (id) => {
     throw error.response?.data || error.message;
   }
 };
+
+export const respondServiceComplain = async (
+  id,
+  responderName,
+  responseText
+) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/respond/${id}`,
+      { responderName, responseText },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};

@@ -23,7 +23,8 @@ import OtpForm from "./pages/OTPForm/OtpForm.jsx";
 import ResendOtp from "./pages/ResendOTP/ResendOtp.jsx";
 import AuthContext, { AuthProvider } from "./utils/context/AuthContext.jsx";
 import { useMediaQuery } from "react-responsive";
-import { Loader } from "lucide-react";
+// import { Loader } from "lucide-react";
+import { HashLoader } from "react-spinners";
 
 // PublicRoute component to restrict authenticated users from accessing auth routes
 const PublicRoute = () => {
@@ -31,8 +32,8 @@ const PublicRoute = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <Loader className="h-8 w-8 text-font1 animate-spin" />
+      <div className="h-full fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-black bg-opacity-50 w-full flex">
+        <HashLoader color="#C0392B" size={50} />
       </div>
     );
   }
@@ -46,8 +47,8 @@ const PrivateRoute = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <Loader className="h-8 w-8 text-font1 animate-spin" />
+      <div className="h-full fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-black bg-opacity-50 w-full flex">
+        <HashLoader color="#C0392B" size={50} />
       </div>
     );
   }
