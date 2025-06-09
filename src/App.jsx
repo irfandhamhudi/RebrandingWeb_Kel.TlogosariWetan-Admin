@@ -11,7 +11,7 @@ import Dashboard from "./pages/dashboard/Dashboard.jsx";
 import Post from "./pages/post/Berita.jsx";
 import Users from "./pages/users/Users.jsx";
 import Settings from "./pages/setting/Settings.jsx";
-import HelpCenter from "./pages/helpcenter/helpCenter.jsx";
+// import HelpCenter from "./pages/helpcenter/helpCenter.jsx";
 import Add from "./pages/post/addPost.jsx";
 import EditPost from "./pages/post/editPost.jsx";
 import Layanan from "./pages/layanan/Layanan.jsx";
@@ -145,7 +145,7 @@ function App() {
               <Route path="/slider" element={<Slider />} />
               <Route path="/users" element={<Users />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/help" element={<HelpCenter />} />
+              {/* <Route path="/help" element={<HelpCenter />} /> */}
               <Route path="/add-post" element={<Add />} />
               <Route path="/edit-post/:id" element={<EditPost />} />
               <Route path="/layanan" element={<Layanan />} />
