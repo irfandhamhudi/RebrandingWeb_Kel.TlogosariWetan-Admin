@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import toast from "react-hot-toast"; // Import react-hot-toast
-import { HashLoader } from "react-spinners"; // Import HashLoader
-import Swal from "sweetalert2"; // Import SweetAlert2
+import toast from "react-hot-toast";
+import { HashLoader } from "react-spinners";
+import Swal from "sweetalert2";
 import error404 from "../../assets/error404.png";
 import {
   getAllSlider,
@@ -12,90 +12,77 @@ import {
 
 const Slider = () => {
   const [sliders, setSliders] = useState([]);
-  const [loading, setLoading] = useState(false); // State untuk loading
+  const [loading, setLoading] = useState(false);
 
-  // Ambil data slider saat komponen di-mount
   useEffect(() => {
     const fetchSliders = async () => {
       try {
-        const response = await getAllSlider(); // Panggil fungsi getAllSlider
-        setSliders(response.data); // Set state sliders dengan data lengkap
+        const response = await getAllSlider();
+        setSliders(response.data);
       } catch (error) {
         console.error("Gagal mengambil data slider:", error);
-        toast.error("Gagal mengambil data slider."); // Notifikasi error
+        toast.error("Gagal mengambil data slider.");
       }
     };
 
     fetchSliders();
   }, []);
 
-  // Handle upload gambar baru
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       const formData = new FormData();
-      formData.append("images", file); // Sesuaikan dengan key yang diharapkan oleh backend
+      formData.append("images", file);
 
-      setLoading(true); // Set loading true saat upload dimulai
+      setLoading(true);
       try {
-        const response = await createSlider(formData); // Kirim gambar ke backend
-        setSliders((prevSliders) => [...prevSliders, response.data]); // Tambahkan gambar ke state
-        toast.success(response.message); // Notifikasi sukses
+        const response = await createSlider(formData);
+        setSliders((prevSliders) => [...prevSliders, response.data]);
+        toast.success(response.message);
       } catch (error) {
         console.error("Gagal mengupload slider:", error);
-        toast.error(error.message); // Notifikasi error
+        toast.error(error.message);
       } finally {
-        setLoading(false); // Set loading false setelah proses selesai
+        setLoading(false);
       }
     }
   };
 
-  // Handle edit gambar
   const handleEditSlider = async (index) => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "image/*";
-    fileInput.multiple = true; // Izinkan multiple file
+    fileInput.multiple = true;
     fileInput.onchange = async (e) => {
       const files = e.target.files;
       if (files && files.length > 0) {
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
-          formData.append("images", files[i]); // Tambahkan semua file ke FormData
+          formData.append("images", files[i]);
         }
 
-        setLoading(true); // Set loading true saat edit dimulai
+        setLoading(true);
         try {
-          // Ambil id slider dari state sliders
           const sliderId = sliders[index]._id;
-
-          // Kirim id dan formData ke backend
           const response = await updateSlider(sliderId, formData);
-
-          // Perbarui state sliders dengan data yang baru
           setSliders((prevSliders) =>
             prevSliders.map((slider, i) =>
-              i === index
-                ? { ...slider, images: response.data.images } // Update semua gambar
-                : slider
+              i === index ? { ...slider, images: response.data.images } : slider
             )
           );
-
-          toast.success(response.message); // Notifikasi sukses
+          toast.success(response.message);
         } catch (error) {
           console.error("Gagal memperbarui slider:", error);
-          toast.error(error.message); // Notifikasi error
+          toast.error(error.message);
         } finally {
-          setLoading(false); // Set loading false setelah proses selesai
+          setLoading(false);
         }
       }
     };
     fileInput.click();
   };
 
-  // Handle hapus gambar
   const handleDeleteSlider = async (index) => {
-    // Konfirmasi hapus dengan SweetAlert2
     const result = await Swal.fire({
       title: "Apakah Anda yakin?",
       text: "Slider yang dihapus tidak dapat dikembalikan!",
@@ -108,40 +95,35 @@ const Slider = () => {
     });
 
     if (result.isConfirmed) {
-      setLoading(true); // Set loading true saat hapus dimulai
+      setLoading(true);
       try {
-        // Ambil id slider dari state sliders
         const sliderId = sliders[index]._id;
-
-        // Hapus slider dari backend
         const response = await deleteSlider(sliderId);
-
-        // Hapus slider dari state
         setSliders((prevSliders) => prevSliders.filter((_, i) => i !== index));
-
-        toast.success(response.message); // Notifikasi sukses
+        toast.success(response.message);
       } catch (error) {
         console.error("Gagal menghapus slider:", error);
-        toast.error(error.message); // Notifikasi error
+        toast.error(error.message);
       } finally {
-        setLoading(false); // Set loading false setelah proses selesai
+        setLoading(false);
       }
     }
   };
 
   return (
-    <div className="min-h-screen p-5 relative">
-      {/* Loading Spinner */}
+    <div className="min-h-screen p-4 sm:p-5 relative">
       {loading && (
-        <div className="h-full fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-black bg-opacity-50 w-full flex z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <HashLoader color="#C0392B" size={50} />
         </div>
       )}
 
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4 sm:gap-6">
         <div className="space-y-2">
-          <h1 className="text-2xl font-medium">Slider</h1>
-          <p className="text-font3">Pilih gambar untuk diupload</p>
+          <h1 className="text-xl sm:text-2xl font-medium">Slider</h1>
+          <p className="text-sm sm:text-base text-font3">
+            Pilih gambar untuk diupload
+          </p>
         </div>
         <div>
           <input
@@ -150,56 +132,65 @@ const Slider = () => {
             onChange={handleFileChange}
             className="hidden"
             id="slider-upload"
-            disabled={loading} // Nonaktifkan input saat loading
+            disabled={loading}
           />
           <label
             htmlFor="slider-upload"
-            className={`flex items-center text-sm bg-primary text-white hover:bg-secondary hover:text-white py-2 px-4 rounded-md cursor-pointer ${
+            className={`flex items-center text-sm sm:text-sm bg-primary text-white hover:bg-secondary hover:text-white py-2 px-4 sm:px-6 rounded-md cursor-pointer w-full sm:w-auto ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
+            aria-label="Upload slider image"
           >
             {loading ? "Uploading..." : "Upload Slider"}
           </label>
         </div>
       </div>
 
-      {/* Preview Gambar dalam Layout Horizontal */}
-      <div className="flex overflow-x-auto w-full gap-4 pb-4">
-        {sliders.map((slider, index) => {
-          // Ambil URL gambar pertama dari array images
-          const imageUrl = slider.images[0];
+      <div className="flex overflow-x-auto w-full gap-3 sm:gap-4 pb-4">
+        {sliders.length === 0 ? (
+          <div className="w-full text-center text-sm sm:text-base text-font3">
+            Tidak ada slider tersedia.
+          </div>
+        ) : (
+          sliders.map((slider, index) => {
+            const imageUrl = slider.images[0];
 
-          return (
-            <div key={slider._id} className="flex-shrink-0 relative group">
-              <img
-                src={imageUrl}
-                alt={`Slider ${index + 1}`}
-                className="w-full h-96 object-cover"
-                onError={(e) => {
-                  console.error("Gagal memuat gambar:", imageUrl);
-                  e.target.src = { error404 }; // Fallback image
-                }}
-              />
-              {/* Tombol Edit dan Hapus */}
-              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                <button
-                  onClick={() => handleEditSlider(index)}
-                  className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm"
-                  disabled={loading} // Nonaktifkan tombol saat loading
-                >
-                  {loading ? "Editing..." : "Edit"}
-                </button>
-                <button
-                  onClick={() => handleDeleteSlider(index)}
-                  className="bg-primary text-white px-3 py-1 rounded hover:bg-secondary text-sm"
-                  disabled={loading} // Nonaktifkan tombol saat loading
-                >
-                  Hapus
-                </button>
+            return (
+              <div
+                key={slider._id}
+                className="flex-shrink-0 relative group w-64 h-48 sm:w-80 sm:h-60 lg:w-full lg:h-[70vh]"
+              >
+                <img
+                  src={imageUrl}
+                  alt={`Slider ${index + 1}`}
+                  className="w-full h-full object-cover rounded"
+                  onError={(e) => {
+                    console.error("Gagal memuat gambar:", imageUrl);
+                    e.target.src = error404;
+                  }}
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 sm:gap-3 rounded">
+                  <button
+                    onClick={() => handleEditSlider(index)}
+                    className="bg-blue-500 text-white px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-blue-600 text-sm sm:text-sm"
+                    disabled={loading}
+                    aria-label={`Edit slider ${index + 1}`}
+                  >
+                    {loading ? "Editing..." : "Edit"}
+                  </button>
+                  <button
+                    onClick={() => handleDeleteSlider(index)}
+                    className="bg-primary text-white px-3 sm:px-4 py-1 sm:py-2 rounded hover:bg-secondary text-sm sm:text-sm"
+                    disabled={loading}
+                    aria-label={`Delete slider ${index + 1}`}
+                  >
+                    Hapus
+                  </button>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </div>
   );

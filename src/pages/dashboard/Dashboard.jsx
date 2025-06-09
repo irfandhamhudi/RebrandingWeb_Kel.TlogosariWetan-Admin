@@ -11,93 +11,77 @@ import Swal from "sweetalert2";
 import { getAllUsers } from "../../utils/data/authAPI";
 
 const Dashboard = () => {
-  const [data, setData] = useState([]); // State untuk menyimpan data
-  const [loading, setLoading] = useState(true); // State untuk menangani loading state
-  const [error, setError] = useState(null); // State untuk menangani error
-  const [bidangData, setBidangData] = useState([]); // State untuk menyimpan data bidang
-  const [newBidang, setNewBidang] = useState(""); // State untuk menyimpan input bidang baru
-  const [users, setUsers] = useState([]); // State untuk menyimpan data pengguna
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [bidangData, setBidangData] = useState([]);
+  const [newBidang, setNewBidang] = useState("");
+  const [users, setUsers] = useState([]);
 
-  // Ambil data saat komponen di-mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getAllData(); // Panggil fungsi getAllData
-        setData(response.data); // Simpan data ke state
-        setLoading(false); // Set loading menjadi false
+        const response = await getAllData();
+        setData(response.data);
+        setLoading(false);
       } catch (error) {
         console.error("Gagal mengambil data:", error);
-        setError(error.message); // Simpan pesan error
-        setLoading(false); // Set loading menjadi false
+        setError(error.message);
+        setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
-  // Ambil data bidang saat komponen di-mount
   useEffect(() => {
     const fetchBidangData = async () => {
       try {
-        const response = await getAllBidang(); // Panggil fungsi getAllBidang
-        // Pastikan respons API memiliki struktur yang diharapkan
+        const response = await getAllBidang();
         if (response.bidang && Array.isArray(response.bidang)) {
-          setBidangData(response.bidang); // Simpan data bidang ke state
+          setBidangData(response.bidang);
         } else {
           console.error("Data bidang tidak valid:", response);
           setError("Data bidang tidak valid");
         }
       } catch (error) {
         console.error("Gagal mengambil data bidang:", error);
-        setError(error.message); // Simpan pesan error
+        setError(error.message);
       }
     };
-
     fetchBidangData();
   }, []);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await getAllUsers(); // Panggil fungsi getAllUsers
-        setUsers(response.data); // Simpan data pengguna ke state
+        const response = await getAllUsers();
+        setUsers(response.data);
       } catch (error) {
         console.error("Gagal mengambil data pengguna:", error);
-        setError(error.message); // Simpan pesan error
+        setError(error.message);
       }
     };
-
     fetchUsers();
   }, []);
 
-  // Fungsi untuk menambahkan bidang baru
   const handleCreateBidang = async () => {
     if (newBidang.trim() === "") {
-      toast.error("Nama bidang tidak boleh kosong"); // Notifikasi error
+      toast.error("Nama bidang tidak boleh kosong");
       return;
     }
-
     try {
-      const data = { name: newBidang }; // Data dalam format JSON
-      // console.log("Data yang dikirim:", data); // Debugging
-
-      const response = await createBidang(data); // Kirim data JSON ke API
-      // console.log("Respons dari API:", response); // Debugging
-
-      // Tambahkan bidang baru ke state
+      const data = { name: newBidang };
+      const response = await createBidang(data);
       setBidangData([...bidangData, { name: newBidang }]);
-      setNewBidang(""); // Reset input
-
-      toast.success(response.message); // Notifikasi sukses
+      setNewBidang("");
+      toast.success(response.message);
     } catch (error) {
       console.error("Gagal membuat bidang:", error);
-      toast.error("Gagal membuat bidang: " + error.message); // Notifikasi error
+      toast.error("Gagal membuat bidang: " + error.message);
     }
   };
 
-  // Fungsi untuk menghapus bidang
   const handleDeleteBidang = async (bidangId) => {
-    // Tampilkan konfirmasi penghapusan
     const result = await Swal.fire({
       title: "Apakah Anda yakin?",
       text: "Anda tidak dapat mengembalikan data ini!",
@@ -109,119 +93,124 @@ const Dashboard = () => {
       cancelButtonText: "Batal",
     });
 
-    // Jika pengguna mengonfirmasi penghapusan
     if (result.isConfirmed) {
       try {
-        const response = await deleteBidang(bidangId); // Panggil fungsi untuk menghapus bidang
-
-        // Perbarui state dengan menghapus bidang yang dihapus
+        const response = await deleteBidang(bidangId);
         setBidangData(bidangData.filter((bidang) => bidang._id !== bidangId));
-
-        toast.success(response.message); // Notifikasi sukses
+        toast.success(response.message);
       } catch (error) {
         console.error("Gagal menghapus bidang:", error);
-        toast.error("Gagal menghapus bidang: " + error.message); // Notifikasi error
+        toast.error("Gagal menghapus bidang: " + error.message);
       }
     }
   };
 
-  // Tampilkan loading state
   if (loading) {
     return (
-      <div className="h-full fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-black bg-opacity-50 w-full flex">
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
         <HashLoader color="#C0392B" size={50} />
       </div>
     );
   }
 
-  // Tampilkan error state
   if (error) {
     return (
-      <div className="bg-gray-100 h-screen p-8">
-        <h1 className="text-2xl font-bold">Terjadi Kesalahan</h1>
-        <p className="text-red-500">{error}</p>
+      <div className="min-h-screen p-4 sm:p-6 bg-gray-100">
+        <h1 className="text-xl sm:text-2xl font-bold">Terjadi Kesalahan</h1>
+        <p className="text-red-500 text-sm sm:text-base">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="h-screen p-5">
-      <Toaster /> {/* Tambahkan Toaster di sini */}
-      <h1 className="text-2xl font-medium mb-4">Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="border border-gray-300 bg-white  p-5 lg:p-5">
-          <h2 className="text-xl font-semibold mb-4">Data</h2>
-          <p className="text-lg">
+    <div className="min-h-screen p-4 sm:p-6">
+      <Toaster />
+      <h1 className="text-xl sm:text-2xl font-medium mb-4">Dashboard</h1>
+
+      {/* Grid Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <div className="border border-gray-300 bg-white p-4 sm:p-5 rounded">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">Data</h2>
+          <p className="text-sm sm:text-base">
             Jumlah Data: <span className="font-bold">{data.length}</span>
           </p>
         </div>
-        <div className="border border-gray-300 bg-white  p-5 lg:p-5">
-          <h2 className="text-xl font-semibold mb-4">Bidang</h2>
-          <p className="text-lg">
+        <div className="border border-gray-300 bg-white p-4 sm:p-5 rounded">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">Bidang</h2>
+          <p className="text-sm sm:text-base">
             Jumlah Bidang:{" "}
             <span className="font-bold">{bidangData.length}</span>
           </p>
         </div>
-        <div className="border border-gray-300 bg-white  p-5 lg:p-5">
-          <h2 className="text-xl font-semibold mb-4">Pengguna</h2>
-          <p className="text-lg">
+        <div className="border border-gray-300 bg-white p-4 sm:p-5 rounded">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">Pengguna</h2>
+          <p className="text-sm sm:text-base">
             Jumlah Pengguna: <span className="font-bold">{users.length}</span>
           </p>
         </div>
       </div>
-      {/* Tabel untuk menampilkan dan membuat bidang */}
+
+      {/* Bidang Management Section */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Manajemen Bidang</h2>
-        <div className="mb-4">
+        <h2 className="text-lg sm:text-xl font-semibold mb-4">
+          Manajemen Bidang
+        </h2>
+        <div className="flex flex-col sm:flex-row sm:items-center mb-4 gap-2">
           <input
             type="text"
             value={newBidang}
             onChange={(e) => setNewBidang(e.target.value)}
             placeholder="Masukkan nama bidang baru"
-            className="border border-gray-300 p-2 w-56 rounded text-sm mr-2"
+            className="border border-gray-300 p-2 rounded text-sm w-full sm:w-64"
           />
           <button
             onClick={handleCreateBidang}
-            className="bg-primary text-white p-2 text-sm rounded hover:bg-secondary"
+            className="bg-primary text-white p-2 text-sm rounded hover:bg-secondary transition-colors"
           >
             Tambah Bidang
           </button>
         </div>
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border border-gray-300 p-2">No</th>
-              <th className="border border-gray-300 p-2">Nama Bidang</th>
-              <th className="border border-gray-300 p-2">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bidangData && bidangData.length > 0 ? (
-              bidangData.map((bidang, index) => (
-                <tr key={index} className="hover:bg-gray-100">
-                  <td className="border border-gray-300 p-2 text-center">
-                    {index + 1}
-                  </td>
-                  <td className="border border-gray-300 p-2">{bidang.name}</td>
-                  <td className="border border-gray-300 p-2 text-center">
-                    <button
-                      onClick={() => handleDeleteBidang(bidang._id)}
-                      className="bg-primary text-white p-2 text-sm rounded hover:bg-secondary"
-                    >
-                      Hapus
-                    </button>
+
+        {/* Responsive Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse bg-white shadow-sm rounded-lg">
+            <thead>
+              <tr className="bg-gray-200 text-sm">
+                <th className="border border-gray-300 p-2 text-left">No</th>
+                <th className="border border-gray-300 p-2 text-left">
+                  Nama Bidang
+                </th>
+                <th className="border border-gray-300 p-2 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bidangData && bidangData.length > 0 ? (
+                bidangData.map((bidang, index) => (
+                  <tr key={index} className="hover:bg-gray-50 text-sm">
+                    <td className="border border-gray-300 p-2">{index + 1}</td>
+                    <td className="border border-gray-300 p-2">
+                      {bidang.name}
+                    </td>
+                    <td className="border border-gray-300 p-2 text-center">
+                      <button
+                        onClick={() => handleDeleteBidang(bidang._id)}
+                        className="bg-red-600 text-white p-2 text-xs rounded hover:bg-red-700 transition-colors"
+                      >
+                        Hapus
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" className="text-center p-4 text-sm">
+                    Tidak ada data bidang
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="3" className="text-center p-2">
-                  Tidak ada data bidang
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

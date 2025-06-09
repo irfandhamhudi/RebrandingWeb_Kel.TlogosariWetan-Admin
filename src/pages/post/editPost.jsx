@@ -11,6 +11,34 @@ import toast from "react-hot-toast";
 import HashLoader from "react-spinners/HashLoader";
 import Swal from "sweetalert2";
 
+// Utility function to convert dd/mm/yyyy to yyyy-mm-dd
+const formatToInputDate = (dateStr) => {
+  if (!dateStr) return "";
+  // Check if date is in dd/mm/yyyy format
+  const parts = dateStr.split("/");
+  if (parts.length === 3) {
+    const [day, month, year] = parts;
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+  // If already in yyyy-mm-dd or another format, try parsing
+  const parsedDate = new Date(dateStr);
+  if (!isNaN(parsedDate)) {
+    return parsedDate.toISOString().split("T")[0];
+  }
+  return "";
+};
+
+// Utility function to convert yyyy-mm-dd to dd/mm/yyyy
+const formatToBackendDate = (dateStr) => {
+  if (!dateStr) return "";
+  const parts = dateStr.split("-");
+  if (parts.length === 3) {
+    const [year, month, day] = parts;
+    return `${day}/${month}/${year}`;
+  }
+  return dateStr;
+};
+
 const EditProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -32,12 +60,14 @@ const EditProduct = () => {
         setTitle(data.title);
         setDescription(data.description);
         setSelectedField(data.bidang._id);
-        setPostDate(data.date);
+        // Convert fetched date to yyyy-mm-dd for input
+        setPostDate(formatToInputDate(data.date));
         setPostTime(data.time);
         setExistingImages(data.images || []);
         setIsLoading(false);
       } catch (error) {
         console.error("Failed to fetch data:", error);
+        toast.error("Gagal memuat data postingan");
         setIsLoading(false);
       }
     };
@@ -52,6 +82,7 @@ const EditProduct = () => {
         setBidangList(response.bidang);
       } catch (error) {
         console.error("Error fetching bidang:", error);
+        toast.error("Gagal memuat daftar bidang");
       }
     };
 
@@ -74,13 +105,19 @@ const EditProduct = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (!title || !description || !selectedField || !postDate || !postTime) {
+      toast.error("Semua kolom wajib diisi");
+      return;
+    }
+
     setIsUpdating(true);
 
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
     formData.append("bidang", selectedField);
-    formData.append("date", postDate);
+    // Convert date to dd/mm/yyyy for backend
+    formData.append("date", formatToBackendDate(postDate));
     formData.append("time", postTime);
 
     existingImages.forEach((image, index) => {
@@ -129,34 +166,39 @@ const EditProduct = () => {
 
   if (isLoading) {
     return (
-      <div className="h-full fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-black bg-opacity-50 w-full flex">
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
         <HashLoader color="#C0392B" size={50} />
       </div>
     );
   }
 
   return (
-    <div className="p-5 min-h-screen">
+    <div className="min-h-screen p-4 sm:p-5">
       {isUpdating && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <HashLoader color="#C0392B" size={50} />
         </div>
       )}
 
-      <div className="mb-10">
-        <h1 className="text-2xl font-medium text-font1">Edit Postingan</h1>
-        <p className="text-font3">Edit informasi terbaru dari instansi</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-medium text-font1">
+          Edit Postingan
+        </h1>
+        <p className="text-sm sm:text-base text-font3 mt-1">
+          Edit informasi terbaru dari instansi
+        </p>
       </div>
+
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {/* Kolom Kiri */}
-          <div className="space-y-4">
-            <div className="border border-borderPrimary bg-white w-full h-max rounded-md shadow-sm">
-              <div className="text-lg font-semibold p-5">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="border border-borderPrimary bg-white w-full rounded">
+              <div className="text-base sm:text-lg font-semibold p-4 sm:p-5">
                 <h1>Nama dan Deskripsi</h1>
               </div>
               <div className="border-b border-borderPrimary"></div>
-              <div className="p-5">
+              <div className="p-4 sm:p-5 space-y-3 sm:space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm text-font2" htmlFor="title">
                     Title
@@ -166,11 +208,11 @@ const EditProduct = () => {
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full mb-3 py-1.5 px-2 border border-borderPrimary rounded text-sm"
+                    className="w-full py-1.5 px-2 border border-borderPrimary rounded text-sm"
                     required
                   />
                 </div>
-                <div className="space-y-2 mt-5">
+                <div className="space-y-2">
                   <label className="text-sm text-font2" htmlFor="description">
                     Description
                   </label>
@@ -178,7 +220,7 @@ const EditProduct = () => {
                     id="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full h-[200px] p-2 border border-borderPrimary rounded text-sm"
+                    className="w-full h-32 sm:h-48 p-2 border border-borderPrimary rounded text-sm"
                     required
                   />
                 </div>
@@ -187,19 +229,20 @@ const EditProduct = () => {
           </div>
 
           {/* Kolom Kanan */}
-          <div className="space-y-4">
-            <div className="border border-borderPrimary bg-white w-full h-max rounded-md shadow-sm">
-              <div className="text-lg font-semibold p-5">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="border border-borderPrimary bg-white w-full rounded">
+              <div className="text-base sm:text-lg font-semibold p-4 sm:p-5">
                 <h1>Bidang</h1>
               </div>
               <div className="border-b border-borderPrimary"></div>
-              <div className="p-5">
+              <div className="p-4 sm:p-5">
                 <div className="space-y-2">
-                  <label className="text-sm text-font2" htmlFor="productName">
-                    Title
+                  <label className="text-sm text-font2" htmlFor="bidang">
+                    Bidang
                   </label>
                   <select
-                    className="w-full mb-3 py-1.5 px-2 border border-borderPrimary rounded text-sm"
+                    id="bidang"
+                    className="w-full py-1.5 px-2 border border-borderPrimary rounded text-sm"
                     value={selectedField}
                     onChange={(e) => setSelectedField(e.target.value)}
                     required
@@ -215,23 +258,22 @@ const EditProduct = () => {
               </div>
             </div>
 
-            {/* Date and Time Section */}
-            <div className="border border-borderPrimary bg-white w-full h-max rounded-md shadow-sm">
-              <div className="text-lg font-semibold p-5">
+            <div className="border border-borderPrimary bg-white w-full rounded">
+              <div className="text-base sm:text-lg font-semibold p-4 sm:p-5">
                 <h1>Tanggal Posting</h1>
               </div>
               <div className="border-b border-borderPrimary"></div>
-              <div className="p-5">
+              <div className="p-4 sm:p-5 space-y-3 sm:space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm text-font2" htmlFor="date">
                     Tanggal
                   </label>
                   <input
-                    type="text"
+                    type="date"
                     id="date"
                     value={postDate}
                     onChange={(e) => setPostDate(e.target.value)}
-                    className="w-full mb-3 py-1.5 px-2 border border-borderPrimary rounded text-sm"
+                    className="w-full py-1.5 px-2 border border-borderPrimary rounded text-sm"
                     required
                   />
                 </div>
@@ -244,23 +286,24 @@ const EditProduct = () => {
                     id="time"
                     value={postTime}
                     onChange={(e) => setPostTime(e.target.value)}
-                    className="w-full mb-3 py-1.5 px-2 border border-borderPrimary rounded text-sm"
+                    className="w-full py-1.5 px-2 border border-borderPrimary rounded text-sm"
                     required
                   />
                 </div>
               </div>
             </div>
 
-            {/* Gambar */}
-            <div className="border w-full border-borderPrimary bg-white rounded-md shadow-sm">
-              <div className="text-lg font-semibold p-5">
+            <div className="border border-borderPrimary bg-white w-full rounded">
+              <div className="text-base sm:text-lg font-semibold p-4 sm:p-5">
                 <h1>Gambar Postingan</h1>
               </div>
               <div className="border-b border-borderPrimary"></div>
-              <div className="p-5 space-y-2">
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-borderPrimary rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              <div className="p-4 sm:p-5 space-y-3 sm:space-y-4">
+                <label className="flex flex-col items-center justify-center w-full h-24 sm:h-32 border-2 border-dashed border-borderPrimary rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                   <CloudUpload size={20} color="gray" />
-                  <span className="text-font3 text-sm">Click to Upload</span>
+                  <span className="text-font3 text-sm mt-1">
+                    Click to Upload
+                  </span>
                   <input
                     type="file"
                     className="hidden"
@@ -269,36 +312,42 @@ const EditProduct = () => {
                     multiple
                   />
                 </label>
-                <div className="mt-5 flex gap-4 overflow-x-auto">
+                <div className="flex gap-3 sm:gap-4 overflow-x-auto">
                   {existingImages.map((file, index) => (
-                    <div key={`existing-${index}`} className="relative">
+                    <div
+                      key={`existing-${index}`}
+                      className="relative flex-shrink-0"
+                    >
                       <img
                         src={file}
                         alt={`Existing ${index}`}
-                        className="w-28 h-28 object-cover rounded border border-borderPrimary"
+                        className="w-20 h-20 sm:w-28 sm:h-28 object-cover rounded border border-borderPrimary"
                       />
                       <button
                         type="button"
                         onClick={() => removeImage(index, true)}
                         className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
                       >
-                        &times;
+                        ×
                       </button>
                     </div>
                   ))}
                   {newImages.map((file, index) => (
-                    <div key={`new-${index}`} className="relative">
+                    <div
+                      key={`new-${index}`}
+                      className="relative flex-shrink-0"
+                    >
                       <img
                         src={URL.createObjectURL(file)}
                         alt={`Uploaded ${index}`}
-                        className="w-28 h-28 object-cover rounded border border-borderPrimary"
+                        className="w-20 h-20 sm:w-28 sm:h-28 object-cover rounded border border-borderPrimary"
                       />
                       <button
                         type="button"
                         onClick={() => removeImage(index, false)}
                         className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
                       >
-                        &times;
+                        ×
                       </button>
                     </div>
                   ))}
@@ -306,25 +355,25 @@ const EditProduct = () => {
               </div>
             </div>
 
-            {/* Submit Buttons */}
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={() => navigate("/post")}
-                className="text-sm bg-font3 text-white  py-2 px-4 rounded-md"
+                className="text-sm bg-font3 text-white py-2 px-4 rounded-md w-full sm:w-auto"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleDelete}
-                className="text-sm bg-primary text-white  py-2 px-4 rounded-md"
+                className="text-sm bg-primary text-white py-2 px-4 rounded-md w-full sm:w-auto"
               >
                 Hapus Berita
               </button>
               <button
                 type="submit"
-                className="text-sm bg-three text-white  py-2 px-4 rounded-md"
+                className="text-sm bg-three text-white py-2 px-4 rounded-md w-full sm:w-auto"
+                disabled={isUpdating}
               >
                 Update Berita
               </button>
