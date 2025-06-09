@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// const API_URL = "https://apiwebsite-production.up.railway.app/api/v1/avatar"; // Sesuaikan dengan URL backend
-const API_URL = "http://localhost:5000/api/v1/avatar";
+const API_URL = "https://apiwebsite-production.up.railway.app/api/v1/avatar"; // Sesuaikan dengan URL backend
+// const API_URL = "http://localhost:5000/api/v1/avatar";
 
 // Upload avatar
 export const uploadAvatar = async (file, userId) => {
