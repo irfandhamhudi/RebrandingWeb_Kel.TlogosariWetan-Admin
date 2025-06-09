@@ -38,7 +38,11 @@ const PublicRoute = () => {
     );
   }
 
-  return isAuthenticated ? <Navigate to="/" replace /> : <Outlet />;
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Outlet />;
 };
 
 // PrivateRoute component to protect routes
