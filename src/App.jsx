@@ -9,11 +9,14 @@ import Sidebar from "./pages/navigation/sidebar";
 import { useState, useContext, useEffect } from "react";
 import Dashboard from "./pages/dashboard/Dashboard.jsx";
 import Post from "./pages/post/Berita.jsx";
+import Galeri from "./pages/galeri/Galeri.jsx";
 import Users from "./pages/users/Users.jsx";
 import Settings from "./pages/setting/Settings.jsx";
 // import HelpCenter from "./pages/helpcenter/helpCenter.jsx";
 import Add from "./pages/post/addPost.jsx";
+import AddGaleri from "./pages/galeri/addGaleri.jsx";
 import EditPost from "./pages/post/editPost.jsx";
+import EditGaleri from "./pages/galeri/GaleriId.jsx";
 import Layanan from "./pages/layanan/Layanan.jsx";
 import Slider from "./pages/slider/Slider.jsx";
 import { Toaster } from "react-hot-toast";
@@ -146,12 +149,15 @@ function App() {
             <Route element={<MainLayout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/post" element={<Post />} />
+              <Route path="/galeri" element={<Galeri />} />
               <Route path="/slider" element={<Slider />} />
               <Route path="/users" element={<Users />} />
               <Route path="/settings" element={<Settings />} />
               {/* <Route path="/help" element={<HelpCenter />} /> */}
               <Route path="/add-post" element={<Add />} />
               <Route path="/edit-post/:id" element={<EditPost />} />
+              <Route path="/add-galeri" element={<AddGaleri />} />
+              <Route path="/galeri/:id" element={<EditGaleri />} />
               <Route path="/layanan" element={<Layanan />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

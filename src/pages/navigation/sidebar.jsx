@@ -12,6 +12,7 @@ import {
   Headset,
   Settings,
   LoaderIcon,
+  ImagePlus,
 } from "lucide-react";
 import MenuItem from "../../components/menuItems/menuItem";
 import PropTypes from "prop-types";
@@ -55,6 +56,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
   const menuItems = [
     { name: "Dashboard", icon: <Home size={20} />, path: "/" },
     { name: "Berita", icon: <Grid2x2 size={20} />, path: "/post" },
+    { name: "Galeri", icon: <ImagePlus size={20} />, path: "/galeri" },
     { name: "Slider", icon: <Images size={20} />, path: "/slider" },
     { name: "Layanan", icon: <Headset size={20} />, path: "/layanan" },
     { name: "Users", icon: <Users size={20} />, path: "/users" },
