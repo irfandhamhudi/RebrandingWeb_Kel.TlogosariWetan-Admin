@@ -113,7 +113,7 @@ const Slider = () => {
   return (
     <div className="min-h-screen p-4 sm:p-5 relative">
       {loading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
           <HashLoader color="#C0392B" size={50} />
         </div>
       )}

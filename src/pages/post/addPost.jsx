@@ -12,8 +12,6 @@ const AddPost = () => {
   const [newImages, setNewImages] = useState([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
   const [bidang, setBidang] = useState("");
   const [bidangList, setBidangList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,23 +47,16 @@ const AddPost = () => {
 
     setLoading(true);
 
-    if (!title || !description || !date || !time || !bidang) {
-      toast.error(
-        "All fields (title, description, date, time, bidang) are required."
-      );
+    if (!title || !description || !bidang) {
+      toast.error("All fields (title, description, bidang) are required.");
       setLoading(false);
       return;
     }
 
-    const formattedDate = date.split("-").reverse().join("/");
-
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("date", formattedDate);
-    formData.append("time", time);
     formData.append("bidang", bidang);
-
     newImages.forEach((file) => {
       formData.append("images", file);
     });
@@ -89,7 +80,7 @@ const AddPost = () => {
   return (
     <div className="min-h-screen p-4 sm:p-5 relative">
       {loading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
           <HashLoader color="#C0392B" size={50} />
         </div>
       )}
@@ -177,7 +168,7 @@ const AddPost = () => {
             </div>
 
             {/* Date Section */}
-            <div className="border border-borderPrimary bg-white w-full rounded">
+            {/* <div className="border border-borderPrimary bg-white w-full rounded">
               <div className="text-base sm:text-lg font-semibold p-4 sm:p-5">
                 <h1>Tanggal Posting</h1>
               </div>
@@ -210,7 +201,7 @@ const AddPost = () => {
                   />
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Image Section */}
             <div className="border border-borderPrimary bg-white w-full rounded">

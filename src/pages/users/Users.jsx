@@ -33,7 +33,7 @@ const User = () => {
   // Tampilkan loading jika data masih diambil
   if (loading) {
     return (
-      <div className="h-full fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-black bg-opacity-50 w-full flex z-50">
+      <div className="h-full fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-black bg-opacity-50 w-full flex z-[9999]">
         <HashLoader color="#C0392B" size={50} />
       </div>
     );

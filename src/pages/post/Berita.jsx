@@ -59,11 +59,11 @@ const Posts = () => {
       </div>
 
       {loading ? (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
           <HashLoader color="#C0392B" size={50} />
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
           {posts.length > 0 ? (
             posts.map((post, index) => (
               <div
@@ -81,13 +81,31 @@ const Posts = () => {
                   </div>
                 )}
                 {/* Metadata Section */}
-                <div className="flex flex-col sm:flex-row sm:justify-between items-start space-y-2 sm:space-y-0 text-xs mt-4 mb-4">
+                <div className="flex items-center gap-2 md:items-start text-xs mt-4 mb-4">
                   <p className="bg-red-100 text-primary py-1 px-2">
                     {post.bidang.name}
                   </p>
-                  <p>
-                    {post.date} - {post.time} WIB
-                  </p>
+                  <span className="bg-gray-200 text-black font-semibold px-4 py-1 text-xs sm:text-xs mt-2 sm:mt-0 inline-block mb-2">
+                    {post.createdAt
+                      ? `${new Date(post.createdAt).toLocaleDateString(
+                          "id-ID",
+                          {
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric",
+                            timeZone: "Asia/Jakarta",
+                          }
+                        )} - ${new Date(post.createdAt).toLocaleTimeString(
+                          "id-ID",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                            timeZone: "Asia/Jakarta",
+                          }
+                        )} WIB`
+                      : "-"}
+                  </span>
                 </div>
                 {/* Title and Description */}
                 <h1

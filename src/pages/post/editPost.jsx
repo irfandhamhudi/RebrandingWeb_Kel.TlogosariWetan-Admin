@@ -11,34 +11,6 @@ import toast from "react-hot-toast";
 import HashLoader from "react-spinners/HashLoader";
 import Swal from "sweetalert2";
 
-// Utility function to convert dd/mm/yyyy to yyyy-mm-dd
-const formatToInputDate = (dateStr) => {
-  if (!dateStr) return "";
-  // Check if date is in dd/mm/yyyy format
-  const parts = dateStr.split("/");
-  if (parts.length === 3) {
-    const [day, month, year] = parts;
-    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  }
-  // If already in yyyy-mm-dd or another format, try parsing
-  const parsedDate = new Date(dateStr);
-  if (!isNaN(parsedDate)) {
-    return parsedDate.toISOString().split("T")[0];
-  }
-  return "";
-};
-
-// Utility function to convert yyyy-mm-dd to dd/mm/yyyy
-const formatToBackendDate = (dateStr) => {
-  if (!dateStr) return "";
-  const parts = dateStr.split("-");
-  if (parts.length === 3) {
-    const [year, month, day] = parts;
-    return `${day}/${month}/${year}`;
-  }
-  return dateStr;
-};
-
 const EditProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -47,8 +19,6 @@ const EditProduct = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedField, setSelectedField] = useState("");
-  const [postDate, setPostDate] = useState("");
-  const [postTime, setPostTime] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [bidangList, setBidangList] = useState([]);
@@ -60,9 +30,6 @@ const EditProduct = () => {
         setTitle(data.title);
         setDescription(data.description);
         setSelectedField(data.bidang._id);
-        // Convert fetched date to yyyy-mm-dd for input
-        setPostDate(formatToInputDate(data.date));
-        setPostTime(data.time);
         setExistingImages(data.images || []);
         setIsLoading(false);
       } catch (error) {
@@ -105,7 +72,7 @@ const EditProduct = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!title || !description || !selectedField || !postDate || !postTime) {
+    if (!title || !description || !selectedField) {
       toast.error("Semua kolom wajib diisi");
       return;
     }
@@ -116,10 +83,6 @@ const EditProduct = () => {
     formData.append("title", title);
     formData.append("description", description);
     formData.append("bidang", selectedField);
-    // Convert date to dd/mm/yyyy for backend
-    formData.append("date", formatToBackendDate(postDate));
-    formData.append("time", postTime);
-
     existingImages.forEach((image, index) => {
       formData.append(`existingImages[${index}]`, image);
     });
@@ -166,7 +129,7 @@ const EditProduct = () => {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
         <HashLoader color="#C0392B" size={50} />
       </div>
     );
@@ -254,41 +217,6 @@ const EditProduct = () => {
                       </option>
                     ))}
                   </select>
-                </div>
-              </div>
-            </div>
-
-            <div className="border border-borderPrimary bg-white w-full rounded">
-              <div className="text-base sm:text-lg font-semibold p-4 sm:p-5">
-                <h1>Tanggal Posting</h1>
-              </div>
-              <div className="border-b border-borderPrimary"></div>
-              <div className="p-4 sm:p-5 space-y-3 sm:space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm text-font2" htmlFor="date">
-                    Tanggal
-                  </label>
-                  <input
-                    type="date"
-                    id="date"
-                    value={postDate}
-                    onChange={(e) => setPostDate(e.target.value)}
-                    className="w-full py-1.5 px-2 border border-borderPrimary rounded text-sm"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm text-font2" htmlFor="time">
-                    Waktu
-                  </label>
-                  <input
-                    type="time"
-                    id="time"
-                    value={postTime}
-                    onChange={(e) => setPostTime(e.target.value)}
-                    className="w-full py-1.5 px-2 border border-borderPrimary rounded text-sm"
-                    required
-                  />
                 </div>
               </div>
             </div>
